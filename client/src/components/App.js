@@ -1,13 +1,16 @@
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
 
-import Create from 'pages/Create.js';
-
 const App = () => (
-  <Switch>
-    <Route exact path="/" component={Create} />
-    <Route path="*" component={() => <h2>404: Not Found</h2>} />
-  </Switch>
+  <div className="App">
+    <div className="App_container">
+      <Switch>
+        <Route exact path="/" component={EncryptPage} />
+        <Route path="/d/:slug" component={DecryptPage} />
+        <Route path="*" component={() => <h2>404: Not Found</h2>} />
+      </Switch>
+    </div>
+  </div>
 );
 
 export default App;
