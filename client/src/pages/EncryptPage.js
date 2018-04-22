@@ -57,7 +57,7 @@ class EncryptPage extends React.Component {
     } else if (status === 'phone') {
       body = (
         <div>
-          <p>Enter a phone number for security:</p>
+          <p>Enter the recipient's phone number for security:</p>
           <Input onChange={e => this.setState({phone: e.target.value})} value={this.state.phone} />
           <div className="EncryptPage_vpad">
             <Button onClick={this.encrypt.bind(this)}>Encrypt Message</Button>
