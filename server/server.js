@@ -5,11 +5,15 @@ import compression from 'compression';
 import { resolve } from 'path';
 import fs from 'fs';
 import db from './data/db';
+import SHA256 from 'crypto-js/sha256'
+
+import { generateCode, sendToken } from './lib/twofactor'
 
 dotenv.config();
 
 const PORT = process.env.PORT || 8080;
 const DEV = process.env.NODE_ENV === 'development';
+
 
 const app = express();
 
@@ -56,7 +60,7 @@ app.post('/api/newMessage', async (req, res) => {
 
   if (req.body.phone && req.body.key) {
 
-    const hash = req.body.key; // hashing to come later
+    const hash = SHA256(req.body.key).toString();
 
     await db('keys').insert({
       hash: hash,
@@ -86,10 +90,10 @@ app.post('/api/getPhone', async (req, res) => {
       hash: req.body.hash
     }).select('phone');
 
-    if(phone[0]) {
+    if (phone[0].phone) {
       res.status(200).send(phone[0]);
     } else {
-      res.status(404).send({ error: "hash not found"})
+      res.status(404).send({ error: "hash not found" })
     }
 
   } else {
@@ -97,7 +101,7 @@ app.post('/api/getPhone', async (req, res) => {
   }
 });
 
-app.post('/api/send2FA', (req, res) => {
+app.post('/api/send2FA', async (req, res) => {
   /*
     {
       hash: "String"
@@ -105,6 +109,30 @@ app.post('/api/send2FA', (req, res) => {
 
     Sends 2FA to phone number based on keyHash in keys table
   */
+
+  if (req.body.hash) {
+
+    const phone = await db('keys').where({
+      hash: req.body.hash
+    }).select('phone');
+
+    if (phone[0].phone) {
+      const code = generateCode();
+      await sendToken(phone[0].phone, code);
+
+      await db('twofactor').insert({
+        code: code,
+        phone: phone[0].phone
+      });
+
+      res.status(200).send({ status: "ok" });
+    } else {
+      res.status(404).send({ error: "hash not found" })
+    }
+
+  } else {
+    res.status(400).send(error: "missing required paramaters");
+  }
 });
 
 app.post('/api/verify2FA', (req, res) => {
@@ -115,6 +143,7 @@ app.post('/api/verify2FA', (req, res) => {
     }
 
     Verifies the code then sends unhashed key if good
+    Get the phone based on hash and from phone get good codes, then check if any of those codes are correct, if they are deletos all entries for that phone
   */
 });
 
