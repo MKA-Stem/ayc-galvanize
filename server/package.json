@@ -23,19 +23,22 @@
   "author": "William Goodall <wgoodall01@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.17.2",
-    "compression": "^1.7.1",
-    "dotenv": "^4.0.0",
-    "express": "4.13.4",
-    "knex": "^0.14.0",
-    "pg": "^7.4.0",
+    "apollo-errors": "^1.5.1",
+    "apollo-server-express": "^1.0.2",
     "babel-cli": "6.5.1",
     "babel-core": "^6.5.2",
     "babel-eslint": "^6.0.0-beta.6",
     "babel-polyfill": "6.5.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.5.0",
-    "babel-preset-stage-0": "6.5.0"
+    "babel-preset-stage-0": "6.5.0",
+    "body-parser": "^1.17.2",
+    "compression": "^1.7.1",
+    "dotenv": "^4.0.0",
+    "express": "4.13.4",
+    "knex": "^0.14.0",
+    "pg": "^7.4.0",
+    "twilio": "^3.15.1"
   },
   "devDependencies": {
     "nodemon": "^1.9.1"
