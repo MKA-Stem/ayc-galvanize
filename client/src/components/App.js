@@ -1,5 +1,8 @@
 import React from 'react';
 import {Route, Switch} from 'react-router-dom';
+import EncryptPage from 'pages/EncryptPage.js';
+import DecryptPage from 'pages/DecryptPage.js';
+import 'antd/dist/antd.css';
 
 const App = () => (
   <div className="App">
