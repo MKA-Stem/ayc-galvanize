@@ -2,12 +2,12 @@ var CryptoJS = require("crypto-js");
 
 export function encrypt(message, key) {
   var ciphered = CryptoJS.AES.encrypt(message, key);
-  return(ciphered);
+  return(ciphered.toString());
 }
 
 export function decrypt(cyphered, key){
   var bytes  = CryptoJS.AES.decrypt(cyphered, key);
-  var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+  var decryptedData = bytes.toString(CryptoJS.enc.Utf8);
   return decryptedData
 }
 
