@@ -181,7 +181,7 @@ app.post('/api/verify2FA', async (req, res) => {
     }
 
   } else {
-    res.status(400).send(error: "missing required paramaters");
+    res.status(400).send({ error: "missing required paramaters" });
   }
 });
 
