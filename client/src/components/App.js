@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, Switch} from 'react-router-dom';
+import {Route, Link, Switch} from 'react-router-dom';
 import EncryptPage from 'pages/EncryptPage.js';
 import DecryptPage from 'pages/DecryptPage.js';
 import AboutPage from 'pages/AboutPage.js';
@@ -16,6 +16,7 @@ const App = () => (
         <Route path="/d/:slug" component={DecryptPage} />
         <Route path="*" component={() => <h2>404: Not Found</h2>} />
       </Switch>
+      <Link to="/about">About SafeSend - Why it's important</Link>
     </div>
   </div>
 );

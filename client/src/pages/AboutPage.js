@@ -19,7 +19,7 @@ const AboutPage = () => (
       <a href="https://www.wikiwand.com/en/Payment_Card_Industry_Data_Security_Standard">
         PCI-DSS
       </a>{' '}
-      and
+      and{' '}
       <a href="https://www.wikiwand.com/en/Health_Insurance_Portability_and_Accountability_Act">
         HIPAA
       </a>. Your encrypted data never touches our servers.
