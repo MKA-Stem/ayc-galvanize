@@ -1,19 +1,34 @@
 import React, {Component} from 'react';
+import {Tabs, Input} from 'antd';
 
 import './App.css';
 
 import { Steps, Button, message } from 'antd';
+
 const Step = Steps.Step;
+const { TextArea } = Input;
+const TabPane = Tabs.TabPane;
+
+function callback(key){
+  console.log(key);
+}
 
 const steps = [{
   title: 'First',
-  content: 'First-content',
+  content: <Tabs defaultActiveKey="1" onChange={callback}>
+    <TabPane tab="Message" key="1">
+      <TextArea rows={4} />
+    </TabPane>
+    <TabPane tab="Credit Card" key="2">
+
+    </TabPane>
+  </Tabs>,
 }, {
   title: 'Second',
-  content: 'Second-content',
+  content: <Input placeholder="#" />,
 }, {
   title: 'Last',
-  content: 'Last-content',
+  content: 'Send this link to the recipient',
 }];
 
 class Stepper extends React.Component {
