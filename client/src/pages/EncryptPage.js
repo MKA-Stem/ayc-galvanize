@@ -2,7 +2,7 @@ import React from 'react';
 import LoadingSpinner from 'components/LoadingSpinner.js';
 import {Steps, Button, message, Input, Form} from 'antd';
 import request from 'lib/http.js';
-import './DecryptPage.css';
+import './EncryptPage.css';
 import {encrypt, decrypt, genKey, hash} from 'lib/cryptography.js';
 
 class EncryptPage extends React.Component {
@@ -57,7 +57,9 @@ class EncryptPage extends React.Component {
         <div>
           <p>Enter a phone number for security:</p>
           <Input onChange={e => this.setState({phone: e.target.value})} value={this.state.phone} />
-          <Button onClick={this.encrypt.bind(this)}>Encrypt Message</Button>
+          <div className="EncryptPage_vpad">
+            <Button onClick={this.encrypt.bind(this)}>Encrypt Message</Button>
+          </div>
         </div>
       );
     } else if (status === 'link') {
@@ -66,17 +68,19 @@ class EncryptPage extends React.Component {
       body = (
         <div>
           <p>Send this link:</p>
-          <Input value={link} id="linkCopyInput" />
-          <Button
-            onClick={() => {
-              const el = document.querySelector('#linkCopyInput');
-              el.select();
-              document.execCommand('copy');
-              message.success('Copied to clipboard!');
-            }}
-          >
-            Copy
-          </Button>
+          <Input onChange={e => null} value={link} id="linkCopyInput" />
+          <div className="EncryptPage_vpad">
+            <Button
+              onClick={() => {
+                const el = document.querySelector('#linkCopyInput');
+                el.select();
+                document.execCommand('copy');
+                message.success('Copied to clipboard!');
+              }}
+            >
+              Copy
+            </Button>
+          </div>
         </div>
       );
     }

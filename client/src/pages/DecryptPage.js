@@ -97,7 +97,7 @@ class DecryptPage extends React.Component {
     } else if (status === 'decrypt') {
       body = (
         <div>
-          <pre>{decrypt(this.parseSlug().cyphertext, key)}</pre>
+          <Input.TextArea rows={16} value={decrypt(this.parseSlug().cyphertext, key)} />
         </div>
       );
     }
