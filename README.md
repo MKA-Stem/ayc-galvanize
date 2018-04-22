@@ -1,2 +1,2 @@
-# ayc-starter
-Starter pack for MKA Stem
+# ayc-galvanize
+Repo for the 2018 Agile Youth Challenge at Galvanize NYC
