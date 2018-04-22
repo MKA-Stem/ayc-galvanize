@@ -121,7 +121,7 @@ app.post('/api/send2FA', async (req, res) => {
       await sendToken(phone[0].phone, code);
 
       await db('twofactor').insert({
-        code: code,
+        code: code.toLowerCase(),
         phone: phone[0].phone
       });
 
@@ -159,7 +159,7 @@ app.post('/api/verify2FA', async (req, res) => {
 
       let found = false;
       codes.forEach(async e => {
-        found |= e.code === req.body.code
+        found |= e.code === req.body.code.toLowerCase();
       });
 
       if (found) {
