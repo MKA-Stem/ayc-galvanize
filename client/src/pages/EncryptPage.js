@@ -1,100 +1,106 @@
-import React, {Component} from 'react';
-import {Tabs, Input} from 'antd';
-import './EncryptPage.css';
+import React from 'react';
+import LoadingSpinner from 'components/LoadingSpinner.js';
+import {Steps, Button, message, Input, Form} from 'antd';
 import request from 'lib/http.js';
-
-import { Steps, Button, message } from 'antd';
-
-const Step = Steps.Step;
-const { TextArea } = Input;
-const TabPane = Tabs.TabPane;
-
-function callback(key){
-  console.log(key);
-}
-
-function copy(){
-  var copyText = document.getElementById("link");
-
-  copyText.select();
-
-  document.execCommand("Copy");
-
-  message.success('Copied to clipboard!')
-}
-
-const steps = [{
-  title: 'First',
-  content: <div className="stepitem"><Tabs defaultActiveKey="1" onChange={callback}>
-    <TabPane tab="Message" key="1">
-      <TextArea rows={4} />
-    </TabPane>
-    <TabPane tab="Credit Card" key="2">
-
-    </TabPane>
-  </Tabs></div>,
-}, {
-  title: 'Second',
-  content: <div className="stepitem"><Input placeholder="#" ref={el => (this.codeInput = el)}/></div>,
-}, {
-  title: 'Last',
-  content: <div className="stepitem"><Input id="link" defaultValue="123" ref={el => (this.codeInput = el)}/></div>,
-}];
+import './DecryptPage.css';
+import {encrypt, decrypt, genKey, hash} from 'lib/cryptography.js';
 
 class EncryptPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      current: 0,
+      status: 'write', // one of 'loading', 'write', 'phone', 'link'
+      text: '', // text to encrypt
+      hash: '', // Hash of encryption key
+      cyphertext: '' // Encrypted text.
     };
   }
-  next() {
-    const current = this.state.current + 1;
-    this.setState({ current });
+
+  doneWriting() {
+    this.setState({status: 'phone'});
+    console.log(this.state.text);
   }
-  prev() {
-    const current = this.state.current - 1;
-    this.setState({ current });
+
+  async encrypt() {
+    const {text, phone} = this.state;
+    this.setState({status: 'loading'});
+    const key = genKey(); // Generate a key
+    const keyHash = hash(key); // hash it
+    const cyphertext = encrypt(text, key); // Encrypt things
+    const resp = await request('newMessage', {phone, key});
+    this.setState({status: 'link', hash: keyHash, cyphertext});
+    console.log(this.state);
   }
-  async send() {
-    console.log("hi");
-    console.log(this.codeInput.input.value);
-    // const resp = await request('newMessage', {phone: this.state.value()});
-    this.next()
-  }
+
   render() {
-    const { current } = this.state;
-    return (
-      <div>
-        <h1>Encrypt something</h1>
-        <Steps current={current} size="small">
-          {steps.map(item => <Step key={item.title} title={item.title} />)}
-        </Steps>
-        <div className="steps-content">{steps[this.state.current].content}</div>
-        <div className="steps-action">
-          {
-            this.state.current === 0
-            &&
-            <Button type="primary" onClick={() => this.next()}>Next</Button>
-          }
-          {
-            this.state.current === 1
-            &&
-            <Button type="primary" onClick={() => this.send(this)}>Next</Button>
-          }
-          {
-            this.state.current === steps.length - 1
-            &&
-            <Button type="primary" onClick={() => this.copy()}>Done</Button>
-          }
-          {
-            this.state.current > 0
-            &&
-            <Button style={{ marginLeft: 8 }} onClick={() => this.prev()}>
-              Previous
-            </Button>
-          }
+    const {status, phone, code, key} = this.state;
+
+    let body = null;
+
+    const Center = ({children}) => <div className="DecryptPage_center">{children}</div>;
+
+    if (status === 'loading') {
+      body = (
+        <div className="DecryptPage_spinner">
+          <LoadingSpinner />
         </div>
+      );
+    } else if (status === 'write') {
+      body = (
+        <div>
+          <Input.TextArea rows={16} onChange={e => this.setState({text: e.target.value})} />
+          <Button onClick={this.doneWriting.bind(this)}>Next</Button>
+        </div>
+      );
+    } else if (status === 'phone') {
+      body = (
+        <div>
+          <p>Enter a phone number for security:</p>
+          <Input onChange={e => this.setState({phone: e.target.value})} value={this.state.phone} />
+          <Button onClick={this.encrypt.bind(this)}>Encrypt Message</Button>
+        </div>
+      );
+    } else if (status === 'link') {
+      const {cyphertext, hash} = this.state;
+      const link = `http://${document.location.host}/d/${cyphertext}.${hash}`;
+      body = (
+        <div>
+          <p>Send this link:</p>
+          <Input value={link} id="linkCopyInput" />
+          <Button
+            onClick={() => {
+              const el = document.querySelector('#linkCopyInput');
+              el.select();
+              document.execCommand('copy');
+              message.success('Copied to clipboard!');
+            }}
+          >
+            Copy
+          </Button>
+        </div>
+      );
+    }
+
+    let current = null;
+    if (status === 'write') {
+      current = 0;
+    }
+    if (status === 'phone') {
+      current = 1;
+    }
+    if (status === 'link') {
+      current = 2;
+    }
+
+    return (
+      <div className="DecryptPage">
+        <h1>Encrypt a Message</h1>
+        <Steps current={current} size="small">
+          <Steps.Step title="Write Message" />
+          <Steps.Step title="Enter Phone #" />
+          <Steps.Step title="Send Link" />
+        </Steps>
+        <div className="DecryptPage_body">{body}</div>
       </div>
     );
   }

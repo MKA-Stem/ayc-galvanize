@@ -2,18 +2,17 @@ import dotenv from 'dotenv';
 import express from 'express';
 import bodyParser from 'body-parser';
 import compression from 'compression';
-import { resolve } from 'path';
+import {resolve} from 'path';
 import fs from 'fs';
 import db from './data/db';
-import SHA256 from 'crypto-js/sha256'
+import SHA256 from 'crypto-js/sha256';
 
-import { generateCode, sendToken } from './lib/twofactor'
+import {generateCode, sendToken} from './lib/twofactor';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 8080;
 const DEV = process.env.NODE_ENV === 'development';
-
 
 const app = express();
 
@@ -59,7 +58,6 @@ app.post('/api/newMessage', async (req, res) => {
   */
 
   if (req.body.phone && req.body.key) {
-
     const hash = SHA256(req.body.key).toString();
 
     await db('keys').insert({
@@ -68,10 +66,9 @@ app.post('/api/newMessage', async (req, res) => {
       key: req.body.key
     });
 
-    res.status(200).send({ status: "ok" });
-
+    res.status(200).send({status: 'ok'});
   } else {
-    res.status(400).send({ error: "missing required parameters" });
+    res.status(400).send({error: 'missing required parameters'});
   }
 });
 
@@ -85,19 +82,19 @@ app.post('/api/getPhone', async (req, res) => {
   */
 
   if (req.body.hash) {
-
-    const phone = await db('keys').where({
-      hash: req.body.hash
-    }).select('phone');
+    const phone = await db('keys')
+      .where({
+        hash: req.body.hash
+      })
+      .select('phone');
 
     if (phone[0].phone) {
       res.status(200).send(phone[0]);
     } else {
-      res.status(404).send({ error: "hash not found" })
+      res.status(404).send({error: 'hash not found'});
     }
-
   } else {
-    res.status(400).send(error: "missing required paramaters");
+    res.status(400).send({error: 'missing required paramaters'});
   }
 });
 
@@ -111,10 +108,11 @@ app.post('/api/send2FA', async (req, res) => {
   */
 
   if (req.body.hash) {
-
-    const phone = await db('keys').where({
-      hash: req.body.hash
-    }).select('phone');
+    const phone = await db('keys')
+      .where({
+        hash: req.body.hash
+      })
+      .select('phone');
 
     if (phone[0].phone) {
       const code = generateCode();
@@ -125,13 +123,12 @@ app.post('/api/send2FA', async (req, res) => {
         phone: phone[0].phone
       });
 
-      res.status(200).send({ status: "ok" });
+      res.status(200).send({status: 'ok'});
     } else {
-      res.status(404).send({ error: "hash not found" })
+      res.status(404).send({error: 'hash not found'});
     }
-
   } else {
-    res.status(400).send(error: "missing required paramaters");
+    res.status(400).send((error: 'missing required paramaters'));
   }
 });
 
@@ -147,15 +144,18 @@ app.post('/api/verify2FA', async (req, res) => {
   */
 
   if (req.body.hash && req.body.code) {
-
-    const response = await db('keys').where({
-      hash: req.body.hash
-    }).select('phone', 'key');
+    const response = await db('keys')
+      .where({
+        hash: req.body.hash
+      })
+      .select('phone', 'key');
 
     if (response[0] && response[0].phone && response[0].key) {
-      const codes = await db('twofactor').where({
-        phone: response[0].phone
-      }).select('code');
+      const codes = await db('twofactor')
+        .where({
+          phone: response[0].phone
+        })
+        .select('code');
 
       let found = false;
       codes.forEach(async e => {
@@ -163,25 +163,27 @@ app.post('/api/verify2FA', async (req, res) => {
       });
 
       if (found) {
-        await db('twofactor').where({
-          phone: response[0].phone
-        }).del();
+        await db('twofactor')
+          .where({
+            phone: response[0].phone
+          })
+          .del();
 
-        await db('keys').where({
-          hash: req.body.hash
-        }).del();
+        await db('keys')
+          .where({
+            hash: req.body.hash
+          })
+          .del();
 
-        res.status(200).send({ key: response[0].key });
+        res.status(200).send({key: response[0].key});
       } else {
-        res.status(403).send({ error: "incorrect code" });
+        res.status(403).send({error: 'incorrect code'});
       }
-
     } else {
-      res.status(404).send({ error: "hash not found" });
+      res.status(404).send({error: 'hash not found'});
     }
-
   } else {
-    res.status(400).send({ error: "missing required paramaters" });
+    res.status(400).send({error: 'missing required paramaters'});
   }
 });
 
@@ -190,5 +192,5 @@ app.get('*', (req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log("Now listening on " + PORT);
+  console.log('Now listening on ' + PORT);
 });

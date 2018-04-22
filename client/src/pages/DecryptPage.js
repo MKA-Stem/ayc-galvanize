@@ -2,6 +2,7 @@ import React from 'react';
 import LoadingSpinner from 'components/LoadingSpinner.js';
 import {Steps, Button, Input, Form} from 'antd';
 import request from 'lib/http.js';
+import {decrypt} from 'lib/cryptography.js';
 import './DecryptPage.css';
 
 class DecryptPage extends React.Component {
@@ -13,6 +14,8 @@ class DecryptPage extends React.Component {
       code: '', // 2fa auth code.
       key: '' // Encryption key for data
     };
+
+    window.parseSlug = this.parseSlug.bind(this);
   }
 
   parseSlug() {
@@ -94,9 +97,7 @@ class DecryptPage extends React.Component {
     } else if (status === 'decrypt') {
       body = (
         <div>
-          <p>Decrypted stuff should go here</p>
-          <p>key:{key}</p>
-          <p>cyphertext:{this.parseSlug().cyphertext}</p>
+          <pre>{decrypt(this.parseSlug().cyphertext, key)}</pre>
         </div>
       );
     }
