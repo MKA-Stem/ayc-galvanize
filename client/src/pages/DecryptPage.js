@@ -1,6 +1,6 @@
 import React from 'react';
 import LoadingSpinner from 'components/LoadingSpinner.js';
-import {Steps, Button, Input} from 'antd';
+import {Steps, Button, Input, Form} from 'antd';
 import request from 'lib/http.js';
 import './DecryptPage.css';
 
@@ -33,7 +33,9 @@ class DecryptPage extends React.Component {
 
   async sendCode() {
     this.setState({status: 'loading'});
-    const resp = await request('send2FA', {hash: this.parseSlug().keyHash});
+    const resp = await request('send2FA', {
+      hash: this.parseSlug().keyHash
+    });
     this.setState({status: 'sent'});
   }
 
@@ -41,7 +43,7 @@ class DecryptPage extends React.Component {
     this.setState({status: 'loading'});
     const resp = await request('verify2FA', {
       hash: this.parseSlug().keyHash,
-      code: this.state.authCode
+      code: this.codeInput.input.value
     });
 
     this.setState({status: 'decrypt', key: resp.key});
@@ -77,7 +79,12 @@ class DecryptPage extends React.Component {
       body = (
         <div>
           <Center>
-            <Input size="large" placeholder="000000" />
+            <Input
+              size="large"
+              placeholder="000000"
+              onPressEnter={this.decrypt.bind(this)}
+              ref={el => (this.codeInput = el)}
+            />
             <Button size="large" onClick={this.decrypt.bind(this)}>
               Unlock
             </Button>
@@ -89,6 +96,7 @@ class DecryptPage extends React.Component {
         <div>
           <p>Decrypted stuff should go here</p>
           <p>key:{key}</p>
+          <p>cyphertext:{this.parseSlug().cyphertext}</p>
         </div>
       );
     }
