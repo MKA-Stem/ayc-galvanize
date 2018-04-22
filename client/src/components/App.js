@@ -4,6 +4,8 @@ import EncryptPage from 'pages/EncryptPage.js';
 import DecryptPage from 'pages/DecryptPage.js';
 import 'antd/dist/antd.css';
 
+import './App.css';
+
 const App = () => (
   <div className="App">
     <div className="App_container">
