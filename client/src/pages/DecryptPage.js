@@ -121,7 +121,7 @@ class DecryptPage extends React.Component {
 
     return (
       <div className="DecryptPage">
-        <h1>Decrypt a Message</h1>
+        <h2>Decrypt a Message</h2>
         <Steps current={current} size="small">
           <Steps.Step title="Send Code" />
           <Steps.Step title="Authenticate" />

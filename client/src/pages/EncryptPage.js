@@ -100,7 +100,7 @@ class EncryptPage extends React.Component {
 
     return (
       <div className="DecryptPage">
-        <h1>Encrypt a Message</h1>
+        <h2>Encrypt a Message</h2>
         <Steps current={current} size="small">
           <Steps.Step title="Write Message" />
           <Steps.Step title="Enter Phone #" />

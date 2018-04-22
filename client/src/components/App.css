@@ -19,3 +19,13 @@
   border-radius:4px;
   box-shadow:0 4px 10px rgba(0,0,0,0.4);
 }
+
+.App_brand{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+}
+
+.App_brand img{
+  margin-right:16px;
+}

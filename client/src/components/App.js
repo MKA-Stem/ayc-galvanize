@@ -5,11 +5,17 @@ import DecryptPage from 'pages/DecryptPage.js';
 import AboutPage from 'pages/AboutPage.js';
 import 'antd/dist/antd.css';
 
+import logoUrl from 'media/logo.svg';
+
 import './App.css';
 
 const App = () => (
   <div className="App">
     <div className="App_container">
+      <h1 className="App_brand">
+        <img src={logoUrl} width={'40px'} height={'40px'} />
+        <span>SafeSend</span>
+      </h1>
       <Switch>
         <Route exact path="/" component={EncryptPage} />
         <Route exact path="/about" component={AboutPage} />
