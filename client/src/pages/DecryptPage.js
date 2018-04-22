@@ -1,6 +1,6 @@
 import React from 'react';
 import LoadingSpinner from 'components/LoadingSpinner.js';
-import {Steps, Button} from 'antd';
+import {Steps, Button, Input} from 'antd';
 import request from 'lib/http.js';
 import './DecryptPage.css';
 
@@ -9,7 +9,9 @@ class DecryptPage extends React.Component {
     super(props);
     this.state = {
       status: 'loading', // one of 'loading', 'presend', 'sent', 'decrypt'
-      phone: null // Phone number.
+      phone: null, // Phone number.
+      code: '', // 2fa auth code.
+      key: '' // Encryption key for data
     };
   }
 
@@ -35,10 +37,22 @@ class DecryptPage extends React.Component {
     this.setState({status: 'sent'});
   }
 
+  async decrypt() {
+    this.setState({status: 'loading'});
+    const resp = await request('verify2FA', {
+      hash: this.parseSlug().keyHash,
+      code: this.state.authCode
+    });
+
+    this.setState({status: 'decrypt', key: resp.key});
+  }
+
   render() {
-    const {status, phone} = this.state;
+    const {status, phone, code, key} = this.state;
 
     let body = null;
+
+    const Center = ({children}) => <div className="DecryptPage_center">{children}</div>;
 
     if (status === 'loading') {
       body = (
@@ -49,10 +63,32 @@ class DecryptPage extends React.Component {
     } else if (status === 'presend') {
       body = (
         <div>
-          <p>{phone}</p>
-          <Button size="large" type="primary" onClick={this.sendCode.bind(this)}>
-            Send Code
-          </Button>
+          <Center>
+            <p>{phone}</p>
+          </Center>
+          <Center>
+            <Button size="large" type="primary" onClick={this.sendCode.bind(this)}>
+              Send Code
+            </Button>
+          </Center>
+        </div>
+      );
+    } else if (status === 'sent') {
+      body = (
+        <div>
+          <Center>
+            <Input size="large" placeholder="000000" />
+            <Button size="large" onClick={this.decrypt.bind(this)}>
+              Unlock
+            </Button>
+          </Center>
+        </div>
+      );
+    } else if (status === 'decrypt') {
+      body = (
+        <div>
+          <p>Decrypted stuff should go here</p>
+          <p>key:{key}</p>
         </div>
       );
     }
@@ -70,7 +106,7 @@ class DecryptPage extends React.Component {
 
     return (
       <div className="DecryptPage">
-        <h1>Decrypt something</h1>
+        <h1>Decrypt a Message</h1>
         <Steps current={current} size="small">
           <Steps.Step title="Send Code" />
           <Steps.Step title="Authenticate" />

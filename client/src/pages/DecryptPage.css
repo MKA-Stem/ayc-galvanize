@@ -19,3 +19,8 @@
   align-items:center;
 }
 
+
+.DecryptPage_center{
+  display:flex;
+  justify-content:center;
+}
