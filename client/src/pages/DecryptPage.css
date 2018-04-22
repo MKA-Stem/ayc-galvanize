@@ -1,0 +1,21 @@
+.DecryptPage{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+
+.DecryptPage_body{
+  margin-top:20px;
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
+
+.DecryptPage_spinner{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+

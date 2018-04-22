@@ -10,6 +10,8 @@
 
 .App_container {
   flex:1;
+  display:flex;
+  flex-direction:column;
   padding:40px;
   max-width: 500px;
   height:600px;
