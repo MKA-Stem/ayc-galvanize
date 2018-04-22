@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import compression from 'compression';
 import {resolve} from 'path';
 import fs from 'fs';
+import db from './data/db';
 
 dotenv.config();
 
@@ -38,6 +39,49 @@ app.use(express.static(SPA_ROOT));
 
 app.get('*', (req, res, next) => {
   res.sendFile(SPA_ROOT + '/index.html');
+});
+
+// API Endpoints
+app.post('/api/newMessage', (req, res) => {
+  /*
+    {
+      phoneNum: "String",
+      key: "String"
+    }
+
+    Hashes Key and puts all in keys table
+  */
+});
+
+app.post('/api/getPhoneNum', (req, res) => {
+  /*
+    {
+      keyHash: "String"
+    }
+
+    Returns phoneNum based on keyHash from keys table
+  */
+});
+
+app.post('/api/send2FA', (req, res) => {
+  /*
+    {
+      keyHash: "String"
+    }
+
+    Sends 2FA to phone number based on keyHash in keys table
+  */
+});
+
+app.post('/api/verify2FA', (req, res) => {
+  /*
+    {
+      keyHash: "String",
+      code: "String"
+    }
+
+    Verifies the code then sends unhashed key if good
+  */
 });
 
 app.listen(PORT, () => {
