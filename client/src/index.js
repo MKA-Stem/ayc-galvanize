@@ -64,16 +64,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 ReactDOM.render(
-  <AuthProvider auth={auth}>
-    <ApolloProvider client={client}>
-      <div>
-        <GraphiQLDev link={link} />
-        <Router>
-          <LoginSwitch loggedIn={<App />} loggedOut={<LoginPage />} />
-        </Router>
-      </div>
-    </ApolloProvider>
-  </AuthProvider>,
+  <ApolloProvider client={client}>
+    <Router>
+      <App />
+    </Router>
+  </ApolloProvider>,
   document.getElementById('root')
 );
 registerServiceWorker();
