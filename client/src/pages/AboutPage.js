@@ -1,7 +1,11 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 
 const AboutPage = () => (
   <div>
+    <div>
+      <Link to="/">Back</Link>
+    </div>
     <h1>About SafeSend</h1>
     <h2>Why it's important</h2>
 

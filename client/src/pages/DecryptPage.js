@@ -86,6 +86,7 @@ class DecryptPage extends React.Component {
     } else if (status === 'sent') {
       body = (
         <div>
+          <p>We just texted you a code. Enter it below to unlock the message:</p>
           <Center>
             <Input
               size="large"
