@@ -68,13 +68,18 @@ class DecryptPage extends React.Component {
     } else if (status === 'presend') {
       body = (
         <div>
-          <Center>
-            <p>{phone}</p>
-          </Center>
+          <p>
+            Someone has sent you a secure message through SafeSend. It requires 2-factor
+            authentication through your phone number to access. To continue, click the button below,
+            and a code will be sent to your phone.
+          </p>
           <Center>
             <Button size="large" type="primary" onClick={this.sendCode.bind(this)}>
               Send Code
             </Button>
+          </Center>
+          <Center>
+            <p>to: {phone}</p>
           </Center>
         </div>
       );

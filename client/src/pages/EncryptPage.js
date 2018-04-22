@@ -49,7 +49,9 @@ class EncryptPage extends React.Component {
       body = (
         <div>
           <Input.TextArea rows={16} onChange={e => this.setState({text: e.target.value})} />
-          <Button onClick={this.doneWriting.bind(this)}>Next</Button>
+          <div className="EncryptPage_vpad">
+            <Button onClick={this.doneWriting.bind(this)}>Next</Button>
+          </div>
         </div>
       );
     } else if (status === 'phone') {
