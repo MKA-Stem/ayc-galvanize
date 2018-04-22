@@ -135,16 +135,54 @@ app.post('/api/send2FA', async (req, res) => {
   }
 });
 
-app.post('/api/verify2FA', (req, res) => {
+app.post('/api/verify2FA', async (req, res) => {
   /*
     {
-      keyHash: "String",
+      hash: "String",
       code: "String"
     }
 
     Verifies the code then sends unhashed key if good
     Get the phone based on hash and from phone get good codes, then check if any of those codes are correct, if they are deletos all entries for that phone
   */
+
+  if (req.body.hash && req.body.code) {
+
+    const response = await db('keys').where({
+      hash: req.body.hash
+    }).select('phone', 'key');
+
+    if (response[0] && response[0].phone && response[0].key) {
+      const codes = await db('twofactor').where({
+        phone: response[0].phone
+      }).select('code');
+
+      let found = false;
+      codes.forEach(async e => {
+        found |= e.code === req.body.code
+      });
+
+      if (found) {
+        await db('twofactor').where({
+          phone: response[0].phone
+        }).del();
+
+        await db('keys').where({
+          hash: req.body.hash
+        }).del();
+
+        res.status(200).send({ key: response[0].key });
+      } else {
+        res.status(403).send({ error: "incorrect code" });
+      }
+
+    } else {
+      res.status(404).send({ error: "hash not found" });
+    }
+
+  } else {
+    res.status(400).send(error: "missing required paramaters");
+  }
 });
 
 app.get('*', (req, res, next) => {
