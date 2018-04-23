@@ -72,7 +72,7 @@ class EncryptPage extends React.Component {
                               value={this.state.text}
               />
             </TabPane>
-            <TabPane tab="Credit Card" key="2">
+            <TabPane disabled tab="Credit Card" key="2">
               <Form>
                 <Form.Item>
               <Input size={"large"} prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
