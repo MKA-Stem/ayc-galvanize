@@ -1,9 +1,10 @@
 import React from 'react';
 import LoadingSpinner from 'components/LoadingSpinner.js';
-import {Steps, Button, message, Input, Form} from 'antd';
+import {Steps, Button, message, Input, Icon} from 'antd';
 import request from 'lib/http.js';
 import './EncryptPage.css';
 import {encrypt, decrypt, genKey, hash} from 'lib/cryptography.js';
+import {deFormat, phoneFormat} from "../lib/phone";
 
 class EncryptPage extends React.Component {
   constructor(props) {
@@ -23,6 +24,7 @@ class EncryptPage extends React.Component {
 
   async encrypt() {
     const {text, phone} = this.state;
+    console.log(phone);
     this.setState({status: 'loading'});
     const key = genKey(); // Generate a key
     const keyHash = hash(key); // hash it
@@ -58,7 +60,9 @@ class EncryptPage extends React.Component {
       body = (
         <div>
           <p>Enter the recipient's phone number for security:</p>
-          <Input onChange={e => this.setState({phone: e.target.value})} value={this.state.phone} />
+          <Input prefix={<Icon type="mobile" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                 onChange={e => this.setState({phone: deFormat(e.target.value)})} value={phoneFormat(this.state.phone)}
+          />
           <div className="EncryptPage_vpad">
             <Button onClick={this.encrypt.bind(this)}>Encrypt Message</Button>
           </div>
@@ -102,9 +106,9 @@ class EncryptPage extends React.Component {
       <div className="DecryptPage">
         <h2>Encrypt a Message</h2>
         <Steps current={current} size="small">
-          <Steps.Step title="Write Message" />
-          <Steps.Step title="Enter Phone #" />
-          <Steps.Step title="Send Link" />
+          <Steps.Step title="Write Message" icon={<Icon type="form" />}/>
+          <Steps.Step title="Enter Phone #" icon={<Icon type="mobile" />}/>
+          <Steps.Step title="Send Link" icon={<Icon type="link" />}/>
         </Steps>
         <div className="DecryptPage_body">{body}</div>
       </div>
