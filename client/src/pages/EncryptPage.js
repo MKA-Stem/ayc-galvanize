@@ -1,10 +1,12 @@
 import React from 'react';
 import LoadingSpinner from 'components/LoadingSpinner.js';
-import {Steps, Button, message, Input, Icon} from 'antd';
+import {Steps, Button, message, Input, Icon, Tabs, Form} from 'antd';
 import request from 'lib/http.js';
 import './EncryptPage.css';
 import {encrypt, decrypt, genKey, hash} from 'lib/cryptography.js';
-import {deFormat, phoneFormat} from "../lib/phone";
+import {deFormat, phoneFormat, cardFormat} from 'lib/formats.js';
+
+const TabPane = Tabs.TabPane;
 
 class EncryptPage extends React.Component {
   constructor(props) {
@@ -34,10 +36,11 @@ class EncryptPage extends React.Component {
     console.log(this.state);
   }
 
+
   render() {
     const {status, phone, code, key} = this.state;
-
     let body = null;
+
 
     const Center = ({children}) => <div className="DecryptPage_center">{children}</div>;
 
@@ -49,8 +52,24 @@ class EncryptPage extends React.Component {
       );
     } else if (status === 'write') {
       body = (
+
         <div>
-          <Input.TextArea rows={16} onChange={e => this.setState({text: e.target.value})} />
+          <Tabs defaultActiveKey="1" onChange={e => {this.setState({text: ''});
+          }}>
+            <TabPane tab="Message" key="1"><Input.TextArea rows={10} onChange={e => this.setState({text: e.target.value})}
+            value={this.state.text}
+            /></TabPane>
+            <TabPane tab="Credit Card" disabled key="2">
+              <Form>
+                <Form.Item>
+                  <Input prefix={<Icon type="credit-card" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                         placeholder={'0000 0000 0000 0000'} maxLength={19}
+                         onChange={e => this.setState({text: deFormat(e.target.value)})} value={cardFormat(this.state.text)}
+                  />
+                </Form.Item>
+              </Form>
+            </TabPane>
+          </Tabs>
           <div className="EncryptPage_vpad">
             <Button onClick={this.doneWriting.bind(this)}>Next</Button>
           </div>
@@ -61,6 +80,7 @@ class EncryptPage extends React.Component {
         <div>
           <p>Enter the recipient's phone number for security:</p>
           <Input prefix={<Icon type="mobile" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                 maxLength={14}
                  onChange={e => this.setState({phone: deFormat(e.target.value)})} value={phoneFormat(this.state.phone)}
           />
           <div className="EncryptPage_vpad">
