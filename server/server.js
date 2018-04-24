@@ -66,9 +66,9 @@ app.post('/api/newMessage', async (req, res) => {
       key: req.body.key
     });
 
-    res.status(200).send({status: 'ok'});
+    res.status(200).json({status: 'ok'});
   } else {
-    res.status(400).send({error: 'missing required parameters'});
+    res.status(400).json({error: 'missing required parameters', display: 'Internal error'});
   }
 });
 
@@ -88,13 +88,15 @@ app.post('/api/getPhone', async (req, res) => {
       })
       .select('phone');
 
-    if (phone[0].phone) {
-      res.status(200).send(phone[0]);
+    if (phone[0] && phone[0].phone) {
+      res.status(200).json(phone[0]);
     } else {
-      res.status(404).send({error: 'hash not found'});
+      res
+        .status(404)
+        .json({error: 'hash not found', display: 'Message has expired or does not exist'});
     }
   } else {
-    res.status(400).send({error: 'missing required paramaters'});
+    res.status(400).json({error: 'missing required paramaters', display: 'Internal error'});
   }
 });
 
@@ -123,12 +125,14 @@ app.post('/api/send2FA', async (req, res) => {
         phone: phone[0].phone
       });
 
-      res.status(200).send({status: 'ok'});
+      res.status(200).json({status: 'ok'});
     } else {
-      res.status(404).send({error: 'hash not found'});
+      res
+        .status(404)
+        .json({error: 'hash not found', display: 'Message has expired or does not exist'});
     }
   } else {
-    res.status(400).send((error: 'missing required paramaters'));
+    res.status(400).json({error: 'missing required paramaters', display: 'Internal error'});
   }
 });
 
@@ -175,15 +179,17 @@ app.post('/api/verify2FA', async (req, res) => {
           })
           .del();
 
-        res.status(200).send({key: response[0].key});
+        res.status(200).json({key: response[0].key});
       } else {
-        res.status(403).send({error: 'incorrect code'});
+        res.status(403).json({error: 'incorrect code', display: 'Auth code was incorrect'});
       }
     } else {
-      res.status(404).send({error: 'hash not found'});
+      res
+        .status(404)
+        .json({error: 'hash not found', display: 'Message has expired or does not exist'});
     }
   } else {
-    res.status(400).send({error: 'missing required paramaters'});
+    res.status(400).json({error: 'missing required paramaters', display: 'Internal error'});
   }
 });
 

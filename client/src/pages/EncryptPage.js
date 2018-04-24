@@ -2,6 +2,7 @@ import React from 'react';
 import LoadingSpinner from 'components/LoadingSpinner.js';
 import {Button, Icon, Input, message, Steps, Tabs} from 'antd';
 import Center from 'components/Center.js';
+import ErrorDisplay from 'components/ErrorDisplay.js';
 import request from 'lib/http.js';
 import './FlowPage.css';
 import {encrypt, genKey, hash} from 'lib/cryptography.js';
@@ -18,7 +19,8 @@ class EncryptPage extends React.Component {
       status: 'write', // one of 'loading', 'write', 'phone', 'link'
       msg: {_type: 'text'}, // Message to encrypt
       hash: '', // Hash of encryption key
-      cyphertext: '' // Encrypted text.
+      cyphertext: '', // Encrypted text.
+      err: null // Possible error.
     };
   }
 
@@ -31,30 +33,47 @@ class EncryptPage extends React.Component {
   }
 
   async encrypt() {
-    const {msg, phone} = this.state;
-    const text = JSON.stringify(msg);
-    this.setState({status: 'loading'});
-    const key = genKey(); // Generate a key
-    const keyHash = hash(key); // hash it
-    const cyphertext = encrypt(text, key); // Encrypt things
-    await request('newMessage', {phone, key});
-    this.setState({status: 'link', hash: keyHash, cyphertext});
+    try {
+      const {msg, phone} = this.state;
+      const text = JSON.stringify(msg);
+      this.setState({status: 'loading'});
+      const key = genKey(); // Generate a key
+      const keyHash = hash(key); // hash it
+      const cyphertext = encrypt(text, key); // Encrypt things
+      await request('newMessage', {phone, key});
+      this.setState({status: 'link', hash: keyHash, cyphertext});
 
-    console.log('Encrypted message:', {
-      msg,
-      phone,
-      text,
-      key,
-      keyHash,
-      cyphertext
-    });
+      console.log('Encrypted message:', {
+        msg,
+        phone,
+        text,
+        key,
+        keyHash,
+        cyphertext
+      });
+    } catch (err) {
+      this.setState({err});
+      console.log(err);
+    }
   }
 
   render() {
-    const {status, msg, phone, cyphertext, hash} = this.state;
+    const {err, status, msg, phone, cyphertext, hash} = this.state;
     let [body, foot] = [null, null];
 
-    if (status === 'loading') {
+    if (err !== null) {
+      body = (
+        <div>
+          <ErrorDisplay err={err} />
+        </div>
+      );
+
+      foot = (
+        <div>
+          <Button onClick={() => window.location.reload()}>Reload</Button>
+        </div>
+      );
+    } else if (status === 'loading') {
       body = (
         <div className="FlowPage_spinner">
           <LoadingSpinner />

@@ -3,6 +3,7 @@ import LoadingSpinner from 'components/LoadingSpinner.js';
 import {Steps, Button, Input, Icon} from 'antd';
 import CreditCard from 'components/CreditCard.js';
 import PhoneNumber from 'components/PhoneNumber.js';
+import ErrorDisplay from 'components/ErrorDisplay.js';
 import TextArea from 'components/TextArea.js';
 import request from 'lib/http.js';
 import {decrypt} from 'lib/cryptography.js';
@@ -15,10 +16,9 @@ class DecryptPage extends React.Component {
       status: 'loading', // one of 'loading', 'presend', 'sent', 'decrypt'
       phone: null, // Phone number.
       code: '', // 2fa auth code.
-      key: '' // Encryption key for data
+      key: '', // Encryption key for data
+      err: null
     };
-
-    window.parseSlug = this.parseSlug.bind(this);
   }
 
   parseSlug() {
@@ -33,34 +33,56 @@ class DecryptPage extends React.Component {
   }
 
   async getPhone() {
-    const resp = await request('getPhone', {hash: this.parseSlug().keyHash});
-    this.setState({status: 'presend', phone: resp.phone});
+    try {
+      const resp = await request('getPhone', {hash: this.parseSlug().keyHash});
+      this.setState({status: 'presend', phone: resp.phone});
+    } catch (err) {
+      this.setState({err});
+      console.log('getPhone err:', err);
+    }
   }
 
   async sendCode() {
-    this.setState({status: 'loading'});
-    await request('send2FA', {
-      hash: this.parseSlug().keyHash
-    });
-    this.setState({status: 'sent'});
+    try {
+      this.setState({status: 'loading'});
+      await request('send2FA', {
+        hash: this.parseSlug().keyHash
+      });
+      this.setState({status: 'sent'});
+    } catch (err) {
+      this.setState({err});
+      console.log('sendCode err:', err);
+    }
   }
 
   async decrypt() {
-    this.setState({status: 'loading'});
-    const resp = await request('verify2FA', {
-      hash: this.parseSlug().keyHash,
-      code: this.state.code
-    });
+    try {
+      this.setState({status: 'loading'});
+      const resp = await request('verify2FA', {
+        hash: this.parseSlug().keyHash,
+        code: this.state.code
+      });
 
-    this.setState({status: 'decrypt', key: resp.key});
+      this.setState({status: 'decrypt', key: resp.key});
+    } catch (err) {
+      this.setState({err});
+      console.log('decrypt err:', err);
+    }
   }
 
   render() {
-    const {status, phone, key, code} = this.state;
+    const {err, status, phone, key, code} = this.state;
 
     let [body, foot] = [null, null];
 
-    if (status === 'loading') {
+    if (err !== null) {
+      body = (
+        <div>
+          <ErrorDisplay err={err} />
+        </div>
+      );
+      foot = <Button onClick={() => window.location.reload()}>Reload</Button>;
+    } else if (status === 'loading') {
       body = (
         <div className="FlowPage_spinner">
           <LoadingSpinner />
