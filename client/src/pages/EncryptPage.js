@@ -61,6 +61,8 @@ class EncryptPage extends React.Component {
         </div>
       );
     } else if (status === 'write') {
+      const next = this.doneWriting.bind(this);
+
       body = (
         <div>
           <Tabs
@@ -71,7 +73,12 @@ class EncryptPage extends React.Component {
             }}
           >
             <TabPane tab="Message" key="text">
-              <TextArea value={msg} onChange={msg => this.setState({msg})} />
+              <TextArea
+                value={msg}
+                onChange={msg => this.setState({msg})}
+                onPressEnter={next}
+                autoFocus
+              />
             </TabPane>
             <TabPane tab="Credit Card" key="cc">
               <CreditCard onChange={e => this.setState({msg: e})} value={msg} />
@@ -80,19 +87,25 @@ class EncryptPage extends React.Component {
         </div>
       );
       foot = (
-        <Button type="primary" onClick={this.doneWriting.bind(this)}>
+        <Button type="primary" onClick={next}>
           Next
         </Button>
       );
     } else if (status === 'phone') {
+      const next = this.encrypt.bind(this);
       body = (
         <div>
           <p>Enter the recipient's phone number for security:</p>
-          <PhoneNumber value={phone} onChange={phone => this.setState({phone})} />
+          <PhoneNumber
+            value={phone}
+            onChange={phone => this.setState({phone})}
+            onPressEnter={next}
+            autoFocus
+          />
         </div>
       );
       foot = (
-        <Button type="primary" onClick={this.encrypt.bind(this)}>
+        <Button type="primary" onClick={next}>
           Encrypt Message
         </Button>
       );

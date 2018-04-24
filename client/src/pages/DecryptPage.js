@@ -1,7 +1,6 @@
 import React from 'react';
 import LoadingSpinner from 'components/LoadingSpinner.js';
 import {Steps, Button, Input} from 'antd';
-import Center from 'components/Center.js';
 import CreditCard from 'components/CreditCard.js';
 import PhoneNumber from 'components/PhoneNumber.js';
 import TextArea from 'components/TextArea.js';
@@ -50,14 +49,14 @@ class DecryptPage extends React.Component {
     this.setState({status: 'loading'});
     const resp = await request('verify2FA', {
       hash: this.parseSlug().keyHash,
-      code: this.codeInput.input.value
+      code: this.state.code
     });
 
     this.setState({status: 'decrypt', key: resp.key});
   }
 
   render() {
-    const {status, phone, key} = this.state;
+    const {status, phone, key, code} = this.state;
 
     let [body, foot] = [null, null];
 
@@ -86,20 +85,23 @@ class DecryptPage extends React.Component {
         </Button>
       );
     } else if (status === 'sent') {
+      const next = this.decrypt.bind(this);
       body = (
         <div>
           <p>We just texted you a code. Enter it below to unlock the message:</p>
           <Input
             size="large"
             placeholder="000000"
-            onPressEnter={this.decrypt.bind(this)}
-            ref={el => (this.codeInput = el)}
+            onPressEnter={next}
+            onChange={e => this.setState({code: e.target.value})}
+            value={code}
+            autoFocus
           />
         </div>
       );
 
       foot = (
-        <Button type="primary" size="large" onClick={this.decrypt.bind(this)}>
+        <Button type="primary" size="large" onClick={next}>
           Unlock
         </Button>
       );
