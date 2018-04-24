@@ -14,6 +14,7 @@ class EncryptPage extends React.Component {
     super(props);
     this.state = {
       status: 'write', // one of 'loading', 'write', 'phone', 'link'
+      _type: 'text', // one of 'text' or 'cc'
       text: '', // text to encrypt
       card: { // card to encrypt
         name: '',
@@ -28,6 +29,9 @@ class EncryptPage extends React.Component {
 
   doneWriting(){
     this.setState({status: 'phone'});
+    if(this.state._type === 'cc'){
+      this.state.text = JSON.stringify(this.state.card)
+    }
     console.log(this.state);
   }
 
@@ -63,16 +67,18 @@ class EncryptPage extends React.Component {
     } else if(status === 'write'){
       body = (
         <div>
-          <Tabs defaultActiveKey="1" onChange={e =>{
+          <Tabs defaultActiveKey="text" onChange={key => {
             this.setState({text: '', card: {name: '', number: '', cv: '', expire: ''}});
+            console.log(key);
+            this.setState({_type: key});
           }}>
-            <TabPane tab="Message" key="1">
+            <TabPane tab="Message" key="text">
               <Input.TextArea rows={9}
                               onChange={e => this.setState({text: e.target.value})}
                               value={this.state.text}
               />
             </TabPane>
-            <TabPane tab="Credit Card" key="2">
+            <TabPane tab="Credit Card" key="cc">
               <Form>
                 <Form.Item>
                   <Input size={"large"} prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
@@ -110,11 +116,11 @@ class EncryptPage extends React.Component {
                                               card: {
                                                 number: this.state.card.number,
                                                 name: this.state.card.name,
-                                                expire: e.format("MM/YY"),
+                                                expire: e,
                                                 cv: this.state.card.cv
                                               }
                                             })}
-                                            value={this.state.card.expire !== '' ? moment(this.state.card.expire) : ''}
+                                            value={ this.state.card.expire}
                     />
                   </Form.Item>
                 </Col>
@@ -124,7 +130,7 @@ class EncryptPage extends React.Component {
                            maxLength={4} size={"large"}
                            onChange={e => this.setState({
                              card: {
-                               number: this.state.card.name,
+                               number: this.state.card.number,
                                name: this.state.card.name,
                                expire: this.state.card.expire,
                                cv: e.target.value
