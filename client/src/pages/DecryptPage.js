@@ -1,6 +1,6 @@
 import React from 'react';
 import LoadingSpinner from 'components/LoadingSpinner.js';
-import {Steps, Button, Input} from 'antd';
+import {Steps, Button, Input, Icon} from 'antd';
 import CreditCard from 'components/CreditCard.js';
 import PhoneNumber from 'components/PhoneNumber.js';
 import TextArea from 'components/TextArea.js';
@@ -142,9 +142,9 @@ class DecryptPage extends React.Component {
       <div className="FlowPage">
         <h2>Decrypt a Message</h2>
         <Steps current={current} size="small">
-          <Steps.Step title="Send Code" />
-          <Steps.Step title="Authenticate" />
-          <Steps.Step title="View Message" />
+          <Steps.Step title="Send Code" icon={<Icon type="message" />} />
+          <Steps.Step title="Authenticate" icon={<Icon type="unlock" />} />
+          <Steps.Step title="View Message" icon={<Icon type="file-text" />} />
         </Steps>
         <div className="FlowPage_body">{body}</div>
         <div className="FlowPage_foot">{foot}</div>
