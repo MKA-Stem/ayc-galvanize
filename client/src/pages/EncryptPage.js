@@ -1,11 +1,13 @@
 import React from 'react';
 import LoadingSpinner from 'components/LoadingSpinner.js';
-import {Button, Col, DatePicker, Form, Icon, Input, message, Steps, Tabs} from 'antd';
+import {Button, Icon, Input, message, Steps, Tabs} from 'antd';
+import Center from 'components/Center.js';
 import request from 'lib/http.js';
-import './EncryptPage.css';
+import './FlowPage.css';
 import {encrypt, genKey, hash} from 'lib/cryptography.js';
-import {cardFormat, deFormat, phoneFormat} from 'lib/formats.js';
-import moment from 'moment';
+import CreditCard from 'components/CreditCard.js';
+import PhoneNumber from 'components/PhoneNumber.js';
+import TextArea from 'components/TextArea.js';
 
 const TabPane = Tabs.TabPane;
 
@@ -14,15 +16,7 @@ class EncryptPage extends React.Component {
     super(props);
     this.state = {
       status: 'write', // one of 'loading', 'write', 'phone', 'link'
-      _type: 'text', // one of 'text' or 'cc'
-      text: '', // text to encrypt
-      card: {
-        // card to encrypt
-        name: '',
-        number: '',
-        cv: '',
-        expire: ''
-      },
+      msg: {_type: 'text'}, // Message to encrypt
       hash: '', // Hash of encryption key
       cyphertext: '' // Encrypted text.
     };
@@ -37,28 +31,32 @@ class EncryptPage extends React.Component {
   }
 
   async encrypt() {
-    const {text, phone} = this.state;
-    console.log(phone);
+    const {msg, phone} = this.state;
+    const text = JSON.stringify(msg);
     this.setState({status: 'loading'});
     const key = genKey(); // Generate a key
     const keyHash = hash(key); // hash it
     const cyphertext = encrypt(text, key); // Encrypt things
     await request('newMessage', {phone, key});
     this.setState({status: 'link', hash: keyHash, cyphertext});
-    console.log(this.state);
+
+    console.log('Encrypted message:', {
+      msg,
+      phone,
+      text,
+      key,
+      keyHash,
+      cyphertext
+    });
   }
 
   render() {
-    const {status} = this.state;
-    let body = null;
-
-    function disabledDate(current) {
-      return current && current < moment().endOf('month');
-    }
+    const {status, msg, phone, cyphertext, hash} = this.state;
+    let [body, foot] = [null, null];
 
     if (status === 'loading') {
       body = (
-        <div className="DecryptPage_spinner">
+        <div className="FlowPage_spinner">
           <LoadingSpinner />
         </div>
       );
@@ -66,129 +64,48 @@ class EncryptPage extends React.Component {
       body = (
         <div>
           <Tabs
-            defaultActiveKey="text"
+            defaultActiveKey={this.state.msg._type}
+            size="small"
             onChange={key => {
-              this.setState({text: '', card: {name: '', number: '', cv: '', expire: ''}});
-              console.log(key);
-              this.setState({_type: key});
+              this.setState({msg: {_type: key}});
             }}
           >
             <TabPane tab="Message" key="text">
-              <Input.TextArea
-                rows={9}
-                onChange={e => this.setState({text: e.target.value})}
-                value={this.state.text}
-              />
+              <TextArea value={msg} onChange={msg => this.setState({msg})} />
             </TabPane>
             <TabPane tab="Credit Card" key="cc">
-              <Form>
-                <Form.Item>
-                  <Input
-                    size={'large'}
-                    prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}} />}
-                    placeholder={'John Doe'}
-                    onChange={e =>
-                      this.setState({
-                        card: {
-                          number: this.state.card.number,
-                          name: e.target.value,
-                          expire: this.state.card.expire,
-                          cv: this.state.card.cv
-                        }
-                      })}
-                    value={this.state.card.name}
-                  />
-                </Form.Item>
-                <Form.Item>
-                  <Input
-                    size={'large'}
-                    prefix={<Icon type="credit-card" style={{color: 'rgba(0,0,0,.25)'}} />}
-                    placeholder={'0000 0000 0000 0000'}
-                    maxLength={19}
-                    onChange={e =>
-                      this.setState({
-                        card: {
-                          number: deFormat(e.target.value),
-                          name: this.state.card.name,
-                          expire: this.state.card.expire,
-                          cv: this.state.card.cv
-                        }
-                      })}
-                    value={cardFormat(this.state.card.number)}
-                  />
-                </Form.Item>
-                <Col span={14}>
-                  <Form.Item>
-                    <DatePicker.MonthPicker
-                      size={'large'}
-                      disabledDate={disabledDate}
-                      format={'MM/YY'}
-                      placeholder={'Expiration Date'}
-                      onChange={e =>
-                        this.setState({
-                          card: {
-                            number: this.state.card.number,
-                            name: this.state.card.name,
-                            expire: e,
-                            cv: this.state.card.cv
-                          }
-                        })}
-                      value={this.state.card.expire}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={10}>
-                  <Form.Item>
-                    <Input
-                      prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}} />}
-                      placeholder={'CVC'}
-                      maxLength={4}
-                      size={'large'}
-                      onChange={e =>
-                        this.setState({
-                          card: {
-                            number: this.state.card.number,
-                            name: this.state.card.name,
-                            expire: this.state.card.expire,
-                            cv: e.target.value
-                          }
-                        })}
-                      value={this.state.card.cv}
-                    />
-                  </Form.Item>
-                </Col>
-              </Form>
+              <CreditCard onChange={e => this.setState({msg: e})} value={msg} />
             </TabPane>
           </Tabs>
-          <div className="EncryptPage_vpad">
-            <Button onClick={this.doneWriting.bind(this)}>Next</Button>
-          </div>
         </div>
+      );
+      foot = (
+        <Button type="primary" onClick={this.doneWriting.bind(this)}>
+          Next
+        </Button>
       );
     } else if (status === 'phone') {
       body = (
         <div>
           <p>Enter the recipient's phone number for security:</p>
-          <Input
-            prefix={<Icon type="mobile" style={{color: 'rgba(0,0,0,.25)'}} />}
-            maxLength={14}
-            onChange={e => this.setState({phone: deFormat(e.target.value)})}
-            value={phoneFormat(this.state.phone)}
-          />
-          <div className="EncryptPage_vpad">
-            <Button onClick={this.encrypt.bind(this)}>Encrypt Message</Button>
-          </div>
+          <PhoneNumber value={phone} onChange={phone => this.setState({phone})} />
         </div>
       );
+      foot = (
+        <Button type="primary" onClick={this.encrypt.bind(this)}>
+          Encrypt Message
+        </Button>
+      );
     } else if (status === 'link') {
-      const {cyphertext, hash} = this.state;
       const link = `http://${document.location.host}/d/${cyphertext}.${hash}`;
       body = (
         <div>
           <p>Send this link:</p>
           <Input onChange={e => null} value={link} id="linkCopyInput" />
-          <div className="EncryptPage_vpad">
+          <Center className="FlowPage_mtop">
             <Button
+              type="primary"
+              size="large"
               onClick={() => {
                 const el = document.querySelector('#linkCopyInput');
                 el.select();
@@ -198,31 +115,27 @@ class EncryptPage extends React.Component {
             >
               Copy
             </Button>
-          </div>
+          </Center>
         </div>
       );
     }
 
-    let current = null;
-    if (status === 'write') {
-      current = 0;
-    }
-    if (status === 'phone') {
-      current = 1;
-    }
-    if (status === 'link') {
-      current = 2;
-    }
+    let current = {
+      write: 0,
+      phone: 1,
+      link: 2
+    }[status];
 
     return (
-      <div className="DecryptPage">
+      <div className="FlowPage">
         <h2>Encrypt a Message</h2>
         <Steps current={current} size="small">
           <Steps.Step title="Write Message" icon={<Icon type="form" />} />
           <Steps.Step title="Enter Phone #" icon={<Icon type="mobile" />} />
           <Steps.Step title="Send Link" icon={<Icon type="link" />} />
         </Steps>
-        <div className="DecryptPage_body">{body}</div>
+        <div className="FlowPage_body">{body}</div>
+        <div className="FlowPage_foot">{foot}</div>
       </div>
     );
   }

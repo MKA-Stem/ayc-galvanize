@@ -1,0 +1,28 @@
+.FlowPage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.FlowPage_body {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.FlowPage_foot {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.FlowPage_spinner {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.FlowPage_mtop {
+  margin-top: 16px;
+}
