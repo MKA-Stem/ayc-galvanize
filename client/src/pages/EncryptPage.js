@@ -1,6 +1,6 @@
 import React from 'react';
 import LoadingSpinner from 'components/LoadingSpinner.js';
-import {Button, DatePicker, Icon, Input, message, Steps, Tabs, Form, Col} from 'antd';
+import {Button, Col, DatePicker, Form, Icon, Input, message, Steps, Tabs} from 'antd';
 import request from 'lib/http.js';
 import './EncryptPage.css';
 import {decrypt, encrypt, genKey, hash} from 'lib/cryptography.js';
@@ -67,69 +67,71 @@ class EncryptPage extends React.Component {
             this.setState({text: '', card: {name: '', number: '', cv: '', expire: ''}});
           }}>
             <TabPane tab="Message" key="1">
-              <Input.TextArea rows={10}
+              <Input.TextArea rows={9}
                               onChange={e => this.setState({text: e.target.value})}
                               value={this.state.text}
               />
             </TabPane>
-            <TabPane disabled tab="Credit Card" key="2">
+            <TabPane tab="Credit Card" key="2">
               <Form>
                 <Form.Item>
-              <Input size={"large"} prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
-                     placeholder={'John Doe'}
-                     onChange={e => this.setState({
-                       card: {
-                         number: this.state.card.number,
-                         name: e.target.value,
-                         expire: this.state.card.expire,
-                         cv: this.state.card.cv
-                       }
-                     })}
-                     value={this.state.card.name}
-              />
+                  <Input size={"large"} prefix={<Icon type="user" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                         placeholder={'John Doe'}
+                         onChange={e => this.setState({
+                           card: {
+                             number: this.state.card.number,
+                             name: e.target.value,
+                             expire: this.state.card.expire,
+                             cv: this.state.card.cv
+                           }
+                         })}
+                         value={this.state.card.name}
+                  />
                 </Form.Item>
                 <Form.Item>
-              <Input size={"large"} prefix={<Icon type="credit-card" style={{color: 'rgba(0,0,0,.25)'}}/>}
-                     placeholder={'0000 0000 0000 0000'} maxLength={19}
-                     onChange={e => this.setState({
-                       card: {
-                         number: deFormat(e.target.value),
-                         name: this.state.card.name,
-                         expire: this.state.card.expire,
-                         cv: this.state.card.cv
-                       }
-                     })}
-                     value={cardFormat(this.state.card.number)}
-              />
+                  <Input size={"large"} prefix={<Icon type="credit-card" style={{color: 'rgba(0,0,0,.25)'}}/>}
+                         placeholder={'0000 0000 0000 0000'} maxLength={19}
+                         onChange={e => this.setState({
+                           card: {
+                             number: deFormat(e.target.value),
+                             name: this.state.card.name,
+                             expire: this.state.card.expire,
+                             cv: this.state.card.cv
+                           }
+                         })}
+                         value={cardFormat(this.state.card.number)}
+                  />
                 </Form.Item>
                 <Col span={14}>
-                <Form.Item>
-              <DatePicker.MonthPicker size={"large"} disabledDate={disabledDate} format={'MM/YY'} placeholder={'Expiration Date'}
-                                      onChange={e => this.setState({
-                                        card: {
-                                          number: this.state.card.number,
-                                          name: this.state.card.name,
-                                          expire: e.format("MM/YY"),
-                                          cv: this.state.card.cv
-                                        }
-                                      })}
-                                      value={this.state.card.expire !== '' ? moment(this.state.card.expire) : ''}
-              />
-                </Form.Item>
+                  <Form.Item>
+                    <DatePicker.MonthPicker size={"large"} disabledDate={disabledDate} format={'MM/YY'}
+                                            placeholder={'Expiration Date'}
+                                            onChange={e => this.setState({
+                                              card: {
+                                                number: this.state.card.number,
+                                                name: this.state.card.name,
+                                                expire: e.format("MM/YY"),
+                                                cv: this.state.card.cv
+                                              }
+                                            })}
+                                            value={this.state.card.expire !== '' ? moment(this.state.card.expire) : ''}
+                    />
+                  </Form.Item>
                 </Col>
                 <Col span={10}>
-              <Form.Item>
-              <Input prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>} placeholder={'CVC'} maxLength={4} size={"large"}
-                     onChange={e => this.setState({
-                       card: {
-                         number: this.state.card.name,
-                         name: this.state.card.name,
-                         expire: this.state.card.expire,
-                         cv: e.target.value
-                       }
-                     })}
-                     value={this.state.card.cv}/>
-              </Form.Item>
+                  <Form.Item>
+                    <Input prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}}/>} placeholder={'CVC'}
+                           maxLength={4} size={"large"}
+                           onChange={e => this.setState({
+                             card: {
+                               number: this.state.card.name,
+                               name: this.state.card.name,
+                               expire: this.state.card.expire,
+                               cv: e.target.value
+                             }
+                           })}
+                           value={this.state.card.cv}/>
+                  </Form.Item>
                 </Col>
               </Form>
             </TabPane>
