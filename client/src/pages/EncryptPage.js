@@ -9,6 +9,7 @@ import {encrypt, genKey, hash} from 'lib/cryptography.js';
 import CreditCard from 'components/CreditCard.js';
 import PhoneNumber from 'components/PhoneNumber.js';
 import TextArea from 'components/TextArea.js';
+import clipboard from 'clipboard-polyfill';
 
 const TabPane = Tabs.TabPane;
 
@@ -139,13 +140,9 @@ class EncryptPage extends React.Component {
               type="primary"
               size="large"
               onClick={() => {
-                const el = document.querySelector('#linkCopyInput');
-                el.select();
-                if(document.execCommand('copy')){
-                  message.success('Copied to clipboard!');
-                }else{
-                  message.warning('Unable to copy link :/')
-                }
+                document.querySelector('#linkCopyInput').select();
+                clipboard.writeText(link);
+                message.success('Copied to clipboard!');
               }}
             >
               Copy
