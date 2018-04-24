@@ -6,9 +6,6 @@ import registerServiceWorker from 'lib/registerServiceWorker';
 
 import {BrowserRouter as Router} from 'react-router-dom';
 
-import EncryptPage from './pages/EncryptPage.js';
-import DecryptPage from './pages/DecryptPage.js';
-
 import request from 'lib/http.js';
 
 window.request = request;

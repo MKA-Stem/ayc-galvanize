@@ -13,7 +13,7 @@ const App = () => (
   <div className="App">
     <div className="App_container">
       <h1 className="App_brand">
-        <img src={logoUrl} width={'40px'} height={'40px'} />
+        <img alt="SafeSend" src={logoUrl} width={'40px'} height={'40px'} />
         <span>SafeSend</span>
       </h1>
       <Switch>

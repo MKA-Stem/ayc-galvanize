@@ -9,7 +9,8 @@
     "heroku-postbuild": "npm run build",
     "start": "cd server && npm run start",
     "dev": "nf start -j Procfile.dev",
-    "heroku-configure": "heroku config --json | tee .env"
+    "heroku-configure": "heroku config --json | tee .env",
+    "format": "prettier --write --single-quote --print-width 100 --bracket-spacing false **/*.js"
   },
   "private": true,
   "workspaces": [
@@ -18,6 +19,7 @@
     "common"
   ],
   "dependencies": {
-    "foreman": "^2.0.0"
+    "foreman": "^2.0.0",
+    "prettier": "^1.12.1"
   }
 }

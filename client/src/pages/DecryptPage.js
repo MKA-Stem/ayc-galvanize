@@ -1,6 +1,6 @@
 import React from 'react';
 import LoadingSpinner from 'components/LoadingSpinner.js';
-import {Steps, Button, Input, Form} from 'antd';
+import {Steps, Button, Input} from 'antd';
 import request from 'lib/http.js';
 import {decrypt} from 'lib/cryptography.js';
 import './DecryptPage.css';
@@ -36,7 +36,7 @@ class DecryptPage extends React.Component {
 
   async sendCode() {
     this.setState({status: 'loading'});
-    const resp = await request('send2FA', {
+    await request('send2FA', {
       hash: this.parseSlug().keyHash
     });
     this.setState({status: 'sent'});
@@ -53,7 +53,7 @@ class DecryptPage extends React.Component {
   }
 
   render() {
-    const {status, phone, code, key} = this.state;
+    const {status, phone, key} = this.state;
 
     let body = null;
 
