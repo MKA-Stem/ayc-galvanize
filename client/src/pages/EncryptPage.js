@@ -141,8 +141,11 @@ class EncryptPage extends React.Component {
               onClick={() => {
                 const el = document.querySelector('#linkCopyInput');
                 el.select();
-                document.execCommand('copy');
-                message.success('Copied to clipboard!');
+                if(document.execCommand('copy')){
+                  message.success('Copied to clipboard!');
+                }else{
+                  message.warning('Unable to copy link :/')
+                }
               }}
             >
               Copy
