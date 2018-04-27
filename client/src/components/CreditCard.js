@@ -25,6 +25,7 @@ const CreditCard = ({onChange, value}) => {
           size="large"
           prefix={<Icon type="credit-card" style={{color: 'rgba(0,0,0,.25)'}} />}
           placeholder={'0000 0000 0000 0000'}
+          pattern={"[0-9]*"} inputmode={"numeric"}
           maxLength={19}
           onChange={e => onChange({...value, number: deFormat(e.target.value)})}
           value={cardFormat(value.number)}
@@ -47,6 +48,7 @@ const CreditCard = ({onChange, value}) => {
           <Input
             prefix={<Icon type="lock" style={{color: 'rgba(0,0,0,.25)'}} />}
             placeholder={'CVC'}
+            pattern="[0-9]*" inputmode="numeric"
             maxLength={4}
             size={'large'}
             onChange={e => onChange({...value, cv: e.target.value})}
